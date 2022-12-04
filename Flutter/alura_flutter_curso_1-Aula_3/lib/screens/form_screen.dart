@@ -1,7 +1,12 @@
+import 'package:alura_flutter_curso_1/data/task_inherited.dart';
 import 'package:flutter/material.dart';
 
 class FormScreen extends StatefulWidget {
-  const FormScreen({Key? key}) : super(key: key);
+  const FormScreen({
+    Key? key,
+    required this.taskContext,
+  }) : super(key: key);
+  final BuildContext taskContext;
 
   @override
   _FormScreenState createState() => _FormScreenState();
@@ -123,6 +128,11 @@ class _FormScreenState extends State<FormScreen> {
                           // print(nameController.text);
                           // print(difficultyController.text);
                           // print(imageController.text);
+                          TaskInherited.of(widget.taskContext).newTask(
+                            nameController.text,
+                            imageController.text,
+                            int.parse(difficultyController.text),
+                          );
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               backgroundColor: Colors.green,
