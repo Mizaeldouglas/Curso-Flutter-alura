@@ -1,4 +1,5 @@
 import 'package:alura_flutter_curso_1/components/task.dart';
+import 'package:alura_flutter_curso_1/data/task_dao.dart';
 import 'package:alura_flutter_curso_1/data/task_inherited.dart';
 import 'package:alura_flutter_curso_1/screens/form_screen.dart';
 import 'package:flutter/material.dart';
@@ -20,9 +21,19 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Tarefas'),
         leading: Container(),
       ),
-      body: ListView(
-        children: TaskInherited.of(context).taskList,
-        padding: EdgeInsets.only(top: 8, bottom: 70),
+      body: Padding(
+        padding: const EdgeInsets.only(top: 8, bottom: 70),
+        child: FutureBuilder<List<Tasks>>(
+            future: TaskDao().findAll(),
+            builder: ((context, snapshot) {
+              List<Tasks>? items = snapshot.data;
+              return ListView.builder(
+                  itemCount: items!.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final Tasks tarefa = items[index];
+                    return tarefa;
+                  });
+            })),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
