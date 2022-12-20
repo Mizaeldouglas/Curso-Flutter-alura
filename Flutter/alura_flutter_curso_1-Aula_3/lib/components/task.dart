@@ -1,4 +1,5 @@
 import 'package:alura_flutter_curso_1/components/difficulty.dart';
+import 'package:alura_flutter_curso_1/data/task_dao.dart';
 import 'package:flutter/material.dart';
 
 class Tasks extends StatefulWidget {
@@ -93,6 +94,9 @@ class _TasksState extends State<Tasks> {
                         height: 52,
                         width: 52,
                         child: ElevatedButton(
+                          onLongPress: () {
+                            TaskDao().delete(widget.nome);
+                          },
                           onPressed: () {
                             setState(() {
                               widget.nivel++;
@@ -111,7 +115,7 @@ class _TasksState extends State<Tasks> {
                           ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -138,6 +142,48 @@ class _TasksState extends State<Tasks> {
                       'Nivel: ${widget.nivel}',
                       style: const TextStyle(color: Colors.white, fontSize: 16),
                     ),
+                  ),
+                  TextButton(
+                    style: TextButton.styleFrom(foregroundColor: Colors.red),
+                    child: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Row(
+                                children: const [
+                                  Center(child: Text("Deletar")),
+                                ],
+                              ),
+                              content: const Text(
+                                  "Tem certeza que deseja DELETAR essa Tarefa"),
+                              actions: [
+                                TextButton(
+                                  onPressed: () async {
+                                    await TaskDao().delete(widget.nome);
+                                    // ignore: use_build_context_synchronously
+                                    Navigator.pop(context);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        backgroundColor: Colors.red,
+                                        content: Text(
+                                            "Tarefa DELETADA, dar Reload no botão de reload"),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text("SIM"),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text("NÃO"),
+                                ),
+                              ],
+                            );
+                          });
+                    },
                   ),
                 ],
               )

@@ -1,3 +1,5 @@
+import 'package:alura_flutter_curso_1/components/task.dart';
+import 'package:alura_flutter_curso_1/data/task_dao.dart';
 import 'package:alura_flutter_curso_1/data/task_inherited.dart';
 import 'package:flutter/material.dart';
 
@@ -142,11 +144,11 @@ class _FormScreenState extends State<FormScreen> {
                           // print(nameController.text);
                           // print(difficultyController.text);
                           // print(imageController.text);
-                          TaskInherited.of(widget.taskContext).newTask(
+                          TaskDao().save(Tasks(
                             nameController.text,
                             imageController.text,
-                            int.parse(difficultyController.text),
-                          );
+                            dificuldade: int.parse(difficultyController.text),
+                          ));
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               backgroundColor: Colors.green,
