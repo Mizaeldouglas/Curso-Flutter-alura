@@ -1,19 +1,28 @@
 import 'package:alura_flutter_curso_1/components/difficulty.dart';
+import 'package:alura_flutter_curso_1/data/task_dao.dart';
 import 'package:flutter/material.dart';
 
 class Tasks extends StatefulWidget {
   final String nome;
   final String foto;
   final int dificuldade;
-  const Tasks(this.nome, this.foto, {Key? key, required this.dificuldade})
+  Tasks(this.nome, this.foto, {Key? key, required this.dificuldade})
       : super(key: key);
+  int nivel = 0;
 
   @override
   State<Tasks> createState() => _TasksState();
 }
 
 class _TasksState extends State<Tasks> {
-  int nivel = 0;
+  bool assetOrNetwork() {
+    if (widget.foto.contains('http')) {
+      return false;
+    }
+
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -49,10 +58,15 @@ class _TasksState extends State<Tasks> {
                       height: 100,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(5),
-                        child: Image.asset(
-                          widget.foto,
-                          fit: BoxFit.cover,
-                        ),
+                        child: assetOrNetwork()
+                            ? Image.asset(
+                                widget.foto,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.network(
+                                widget.foto,
+                                fit: BoxFit.cover,
+                              ),
                       ),
                     ),
                     Column(
@@ -80,9 +94,12 @@ class _TasksState extends State<Tasks> {
                         height: 52,
                         width: 52,
                         child: ElevatedButton(
+                          onLongPress: () {
+                            TaskDao().delete(widget.nome);
+                          },
                           onPressed: () {
                             setState(() {
-                              nivel++;
+                              widget.nivel++;
                             });
                           },
                           child: Column(
@@ -98,7 +115,7 @@ class _TasksState extends State<Tasks> {
                           ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -114,7 +131,7 @@ class _TasksState extends State<Tasks> {
                       child: LinearProgressIndicator(
                         color: Colors.white,
                         value: (widget.dificuldade > 0)
-                            ? (nivel / widget.dificuldade) / 10
+                            ? (widget.nivel / widget.dificuldade) / 10
                             : 1,
                       ),
                     ),
@@ -122,9 +139,51 @@ class _TasksState extends State<Tasks> {
                   Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: Text(
-                      'Nivel: $nivel',
+                      'Nivel: ${widget.nivel}',
                       style: const TextStyle(color: Colors.white, fontSize: 16),
                     ),
+                  ),
+                  TextButton(
+                    style: TextButton.styleFrom(foregroundColor: Colors.red),
+                    child: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Row(
+                                children: const [
+                                  Center(child: Text("Deletar")),
+                                ],
+                              ),
+                              content: const Text(
+                                  "Tem certeza que deseja DELETAR essa Tarefa"),
+                              actions: [
+                                TextButton(
+                                  onPressed: () async {
+                                    await TaskDao().delete(widget.nome);
+                                    // ignore: use_build_context_synchronously
+                                    Navigator.pop(context);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        backgroundColor: Colors.red,
+                                        content: Text(
+                                            "Tarefa DELETADA, dar Reload no botão de reload"),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text("SIM"),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text("NÃO"),
+                                ),
+                              ],
+                            );
+                          });
+                    },
                   ),
                 ],
               )

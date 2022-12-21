@@ -1,3 +1,4 @@
+import 'package:alura_flutter_curso_1/data/task_inherited.dart';
 import 'package:alura_flutter_curso_1/screens/home_page.dart';
 import 'package:flutter/material.dart';
 
@@ -11,11 +12,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const HomePage(),
+      home: TaskInherited(child: const HomePage()),
     );
   }
 }
